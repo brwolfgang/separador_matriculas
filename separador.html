@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Separador de matrículas</title>
+    <link rel="stylesheet" href="w3.css">
+</head>
+<body>
+<!--<form>-->
+    <!--<label for="registrosPonto">Registros do ponto:</label><br>-->
+    <!--<textarea name="registrosPonto" id="registrosPonto" cols="35" rows="10"></textarea>-->
+<!--</form>-->\
+
+<form onsubmit="download(this['name'].value, this['text'].value)">
+    <input type="text" name="name" value="test.txt">
+    <textarea name="text"></textarea>
+    <input type="submit" value="Download">
+</form>
+
+<script language="JavaScript">
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+</script>
+</body>
+</html>
