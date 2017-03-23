@@ -7,17 +7,17 @@
 </head>
 <body>
 
-<div class="w3-container w3-blue-gray w3-margin-bottom">
+<div class="w3-container w3-blue-gray w3-margin-bottom w3-card-4">
     <header><h2>Separador de registros de ponto</h2></header>
 </div>
 <div class="w3-content">
     <div class="w3-card-4 w3-margin-bottom">
         <header class="w3-container w3-blue-grey">
-            <h2>Lista original</h2>
+            <h3>Registros do ponto</h3>
         </header>
         <div class="w3-container">
-            <label class="w3-label" for="registrosPonto">Registros do ponto:</label><br>
-            <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10" placeholder="Cole aqui os registros da lista original"></textarea>
+            <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10"
+                      placeholder="Cole aqui os registros da lista original. Um por linha."></textarea>
 
             <!--<form onsubmit="download(this['name'].value, this['text'].value)">-->
             <!--<input type="text" name="name" value="test.txt">-->
@@ -27,19 +27,36 @@
         </div>
     </div>
     <div class="w3-row-padding">
-        <div class="w3-card-4 w3-margin-bottom w3-col s6">
-            <header class="w3-container w3-blue-grey" style="width: 100%">
-                <h2>Matrículas servidores</h2>
-            </header>
+        <div class="w3-half">
+            <div class="w3-card w3-margin-bottom">
+                <header class="w3-blue-grey w3-container">
+                    <h3>Matrículas dos Servidores</h3>
+                </header>
+                <div class="w3-container">
+                    <textarea class="w3-input w3-margin-bottom" name="matServidores" id="matServidores" cols="10" rows="5"
+                              placeholder="Cole aqui as matrículas dos servidores. Uma por linha."></textarea>
+                </div>
+            </div>
         </div>
 
-        <div class="w3-card-4 w3-margin-bottom w3-col s6">
-            <header class="w3-container w3-blue-grey">
-                <h2>Matrículas terceirizados</h2>
-            </header>
+        <div class="w3-half">
+            <div class="w3-card w3-margin-bottom">
+                <header class="w3-container w3-blue-grey">
+                    <h3>Matrículas dos Terceirizados</h3>
+                </header>
+                <div class="w3-container">
+                    <textarea class="w3-input w3-margin-bottom" name="matTerceirizados" id="matTerceirizados" cols="10" rows="5"
+                              placeholder="Cole aqui as matrículas dos terceirizados. Uma por linha."></textarea>
+                </div>
+            </div>
         </div>
     </div>
+    <div class="w3-block w3-center">
+        <button class="w3-button w3-center" onclick="separarMatriculas()">Separar registros</button>
+    </div>
 </div>
+
+<script language="JavaScript" src="separador.js"></script>
 
 <script language="JavaScript">
     function download(filename, text) {
