@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Separador de matrículas</title>
+    <title>Separador de Registros de Ponto</title>
     <link rel="stylesheet" href="w3.css">
 </head>
 <body>
@@ -18,18 +18,12 @@
         <div class="w3-container">
             <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10"
                       placeholder="Cole aqui os registros da lista original. Um por linha."
-                      onchange="carregarDadosTela()">
-            </textarea>
-            <!--<form onsubmit="download(this['name'].value, this['text'].value)">-->
-            <!--<input type="text" name="name" value="test.txt">-->
-            <!--<textarea name="text"></textarea>-->
-            <!--<input type="submit" value="Download">-->
-            <!--</form>-->
+                      onchange="carregarDadosTela()"></textarea>
         </div>
     </div>
 
     <div class="w3-container">
-        <div class="w3-content w3-center">
+        <div class="w3-content">
             <div class="w3-card-4 w3-margin-bottom" style="margin-left: 25%; margin-right: 25%">
                 <header class="w3-container w3-blue-grey">
                     <h3 id="quantidadeMatriculas">Matrículas encontradas</h3>
@@ -48,33 +42,18 @@
 
 <div id="modalDownload" class="w3-modal">
     <div class="w3-modal-content">
-
-            <header class="w3-container w3-blue-gray">
-                <span onclick="document.getElementById('modalDownload').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-                <h3>Download de registros separados</h3>
-            </header>
-
-            <p>Some text in the Modal..</p>
-            <p>Some text in the Modal..</p>
-
+        <header class="w3-container w3-blue-gray">
+            <span onclick="document.getElementById('modalDownload').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+            <h3>Download de registros separados</h3>
+        </header>
+        <div class="w3-container w3-center">
+            <a class="w3-button" id="downloadServidores">Servidores</a>
+            <a class="w3-button" id="downloadTerceirizados">Terceirizados</a>
+        </div>
     </div>
 </div>
 
 <script language="JavaScript" src="separador.js"></script>
 
-<script language="JavaScript">
-    function download(filename, text) {
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
-    }
-</script>
 </body>
 </html>

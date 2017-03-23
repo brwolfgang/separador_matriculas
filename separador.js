@@ -5,8 +5,6 @@ camposForm = {
 };
 
 var arrayRegistrosPonto;
-var arrayMatriculasServidores;
-var arrayMatriculasTerceirizados;
 var arrayMatriculasUnicas;
 var containerListaMatriculasUnicas = document.getElementById("containerListaMatriculasUnicas");
 
@@ -18,38 +16,84 @@ function obterDadosTextArea() {
 }
 
 function separarMatriculas() {
-    document.getElementById("modalDownload").style.display = 'block';
+    if (arrayRegistrosPonto.length === 0) {
+        alert("Nenhum registro a separar.");
+        return;
+    }
 
-    // consertarMatricula(arrayMatriculasServidores);
-    // consertarMatricula(arrayMatriculasTerceirizados);
-    //
-    // var arrayRegistroPontoServidor = arrayRegistrosPonto.filter(function(registroPonto) {
-    //     var isRegistroServidor = false;
-    //     var matriculaRegistro = registroPonto.substr(9, 6);
-    //     for (var i = 0; i < arrayMatriculasServidores.length; i++) {
-    //         if (matriculaRegistro.includes(arrayMatriculasServidores[i])) {
-    //             isRegistroServidor = true;
-    //             break;
-    //         }
-    //     }
-    //     return isRegistroServidor;
-    // });
-    // console.log(arrayRegistroPontoServidor);
-    //
-    // var arrayRegistroPontoTerceirizado = arrayRegistrosPonto.filter(function(registroPonto) {
-    //     var isRegistroTerceirizado = false;
-    //     var matriculaRegistro = registroPonto.substr(9, 6);
-    //     for (var i = 0; i < arrayMatriculasTerceirizados.length; i++) {
-    //         if (matriculaRegistro.includes(arrayMatriculasTerceirizados[i])) {
-    //             isRegistroTerceirizado = true;
-    //             break;
-    //         }
-    //     }
-    //     return isRegistroTerceirizado;
-    // });
-    // console.log(arrayRegistroPontoTerceirizado);
-    //
-    // identificarRegistrosDesconhecidos(arrayRegistrosPonto, arrayRegistroPontoServidor, arrayRegistroPontoTerceirizado);
+    if (arrayMatriculasUnicas.length === 0) {
+        alert("Nenhuma matrícula a ser utilizada na separação.");
+        return;
+    }
+
+    var qtdeServidores = 0;
+    var qtdeTerceirizados = 0;
+    for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
+        if (arrayMatriculasUnicas[i].tipo === "servidor") {
+            qtdeServidores++;
+            continue;
+        }
+        if (arrayMatriculasUnicas[i].tipo === "terceirizado") {
+            qtdeTerceirizados++;
+        }
+    }
+
+    if (qtdeServidores === 0) {
+        alert("Todas as matrículas são do tipo TERCEIRIZADO, nada a separar.");
+        return;
+    }
+    if (qtdeTerceirizados === 0) {
+        alert("Todas as matrículas são do tipo SERVIDOR, nada a separar.");
+        return;
+    }
+
+    var arrayRegistroPontoServidor = arrayRegistrosPonto.filter(function(registroPonto) {
+        var isRegistroServidor = false;
+        var matriculaRegistro = registroPonto.substr(9, 6);
+        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
+            if (arrayMatriculasUnicas[i].tipo === "servidor") {
+                if (matriculaRegistro.includes(arrayMatriculasUnicas[i].matricula)) {
+                    isRegistroServidor = true;
+                    break;
+                }
+            }
+        }
+        return isRegistroServidor;
+    });
+
+    var arrayRegistroPontoTerceirizado = arrayRegistrosPonto.filter(function(registroPonto) {
+        var isRegistroTerceirizado = false;
+        var matriculaRegistro = registroPonto.substr(9, 6);
+        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
+            if (arrayMatriculasUnicas[i].tipo === "terceirizado") {
+                if (matriculaRegistro.includes(arrayMatriculasUnicas[i].matricula)) {
+                    isRegistroTerceirizado = true;
+                    break;
+                }
+            }
+        }
+        return isRegistroTerceirizado;
+    });
+
+    var btnDownloadServidores = document.getElementById("downloadServidores");
+    btnDownloadServidores.setAttribute('href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoServidor)));
+    btnDownloadServidores.setAttribute('download', 'registros_servidor_' + Date.now());
+
+    var btnDownloadTerceirizados = document.getElementById("downloadTerceirizados");
+    btnDownloadTerceirizados.setAttribute('href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoTerceirizado)));
+    btnDownloadTerceirizados.setAttribute('download', 'registros_terceirizado_' + Date.now());
+
+    document.getElementById("modalDownload").style.display = 'block';
+}
+
+function gerarTextoDownload(arrayRegistros) {
+    var texto = "";
+    for (var i = 0; i < arrayRegistros.length; i++) {
+        texto += arrayRegistros[i] + "\n"
+    }
+    return texto;
 }
 
 function consertarMatricula(arrayMatricula) {
@@ -124,7 +168,6 @@ function atualizarDadosMatriculas() {
             }
         }
 
-        console.log(arrayMatriculasUnicas);
         resolve(arrayMatriculasUnicas.length);
     });
 
