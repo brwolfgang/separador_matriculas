@@ -17,8 +17,19 @@
         </header>
         <div class="w3-container">
             <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10"
-                      placeholder="Cole aqui os registros da lista original. Um por linha."></textarea>
-
+                      placeholder="Cole aqui os registros da lista original. Um por linha."
+                      onchange="carregarDadosTela()">
+            </textarea>
+            <div class="w3-row-padding w3-half">
+                <div class="w3-container w3-pale-blue w3-margin-bottom w3-center">
+                    <p class="w3-opacity" id="quantidadeRegistros"></p>
+                </div>
+            </div>
+            <div class="w3-row-padding w3-half">
+                <div class="w3-container w3-pale-blue w3-margin-bottom w3-center">
+                    <p class="w3-opacity" id="quantidadeMatriculas"></p>
+                </div>
+            </div>
             <!--<form onsubmit="download(this['name'].value, this['text'].value)">-->
             <!--<input type="text" name="name" value="test.txt">-->
             <!--<textarea name="text"></textarea>-->
