@@ -13,23 +13,13 @@
 <div class="w3-content">
     <div class="w3-card-4 w3-margin-bottom">
         <header class="w3-container w3-blue-grey">
-            <h3>Registros do ponto</h3>
+            <h3 id="quantidadeRegistros">Registros do ponto</h3>
         </header>
         <div class="w3-container">
             <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10"
                       placeholder="Cole aqui os registros da lista original. Um por linha."
                       onchange="carregarDadosTela()">
             </textarea>
-            <div class="w3-row-padding w3-half">
-                <div class="w3-container w3-pale-blue w3-margin-bottom w3-center">
-                    <p class="w3-opacity" id="quantidadeRegistros"></p>
-                </div>
-            </div>
-            <div class="w3-row-padding w3-half">
-                <div class="w3-container w3-pale-blue w3-margin-bottom w3-center">
-                    <p class="w3-opacity" id="quantidadeMatriculas"></p>
-                </div>
-            </div>
             <!--<form onsubmit="download(this['name'].value, this['text'].value)">-->
             <!--<input type="text" name="name" value="test.txt">-->
             <!--<textarea name="text"></textarea>-->
@@ -37,32 +27,21 @@
             <!--</form>-->
         </div>
     </div>
-    <div class="w3-row-padding">
-        <div class="w3-half">
-            <div class="w3-card w3-margin-bottom">
-                <header class="w3-blue-grey w3-container">
-                    <h3>Matrículas dos Servidores</h3>
-                </header>
-                <div class="w3-container">
-                    <textarea class="w3-input w3-margin-bottom" name="matServidores" id="matServidores" cols="10" rows="5"
-                              placeholder="Cole aqui as matrículas dos servidores. Uma por linha."></textarea>
-                </div>
-            </div>
-        </div>
 
-        <div class="w3-half">
-            <div class="w3-card w3-margin-bottom">
+    <div class="w3-container">
+        <div class="w3-content w3-center">
+            <div class="w3-card-4 w3-margin-bottom" style="margin-left: 25%; margin-right: 25%">
                 <header class="w3-container w3-blue-grey">
-                    <h3>Matrículas dos Terceirizados</h3>
+                    <h3 id="quantidadeMatriculas">Matrículas encontradas</h3>
                 </header>
                 <div class="w3-container">
-                    <textarea class="w3-input w3-margin-bottom" name="matTerceirizados" id="matTerceirizados" cols="10" rows="5"
-                              placeholder="Cole aqui as matrículas dos terceirizados. Uma por linha."></textarea>
+                    <div class="w3-content" id="containerListaMatriculasUnicas"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="w3-block w3-center">
+
+    <div class="w3-block w3-center w3-margin-bottom">
         <button class="w3-button w3-center" onclick="separarMatriculas()">Separar registros</button>
     </div>
 </div>

@@ -8,12 +8,10 @@ var arrayRegistrosPonto;
 var arrayMatriculasServidores;
 var arrayMatriculasTerceirizados;
 var arrayMatriculasUnicas;
+var containerListaMatriculasUnicas = document.getElementById("containerListaMatriculasUnicas");
 
 function obterDadosTextArea() {
-    arrayRegistrosPonto             = camposForm.txtRegistrosPonto.value.split("\n");
-    arrayMatriculasServidores       = camposForm.txtMatriculasServidores.value.split("\n");
-    arrayMatriculasTerceirizados    = camposForm.txtMatriculasTerceirizados.value.split("\n");
-
+    arrayRegistrosPonto = camposForm.txtRegistrosPonto.value.split("\n");
     arrayRegistrosPonto = arrayRegistrosPonto.filter(function(registro) {
         return registro.trim().length === 33;
     })
@@ -93,7 +91,7 @@ function gerarConteudoArquivoSaida(arrayRegistrosSeparados) {
     return conteudo;
 }
 
-function atualizarQuantidadeMatriculas() {
+function atualizarDadosMatriculas() {
     var alertaQuantidadeMatriculas = document.getElementById("quantidadeMatriculas");
 
     var promiseQuantidadeMatriculasUnicas = new Promise((resolve, reject) => {
@@ -116,13 +114,21 @@ function atualizarQuantidadeMatriculas() {
             }
         }
         arrayMatriculasUnicas.sort();
+
+        for (i = 0; i < arrayMatriculasUnicas.length; i++) {
+            arrayMatriculasUnicas[i] = {
+                matricula: arrayMatriculasUnicas[i],
+                tipo: "servidor"
+            }
+        }
+
         console.log(arrayMatriculasUnicas);
         resolve(arrayMatriculasUnicas.length);
     });
 
     promiseQuantidadeMatriculasUnicas.then(
         function (result) {
-            alertaQuantidadeMatriculas.textContent = "Quantidade de matrículas únicas encontradas: " + result;
+            alertaQuantidadeMatriculas.textContent = "Matrículas (" + result + ")";
         }, null
     );
 }
@@ -136,15 +142,49 @@ function atualizarQuantidadeRegistros() {
 
     promiseQuantidadeMatriculasUnicas.then(
         function (result) {
-            alertaQuantidadeRegistros.textContent = "Quantidade de registros encontrados: " + result;
+            alertaQuantidadeRegistros.textContent = "Registros do ponto (" + result + ")";
         }
     );
+}
+
+function alterarTipoMatricula(matricula, tipo) {
+    for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
+        if (arrayMatriculasUnicas[i].matricula === matricula) {
+            arrayMatriculasUnicas[i].tipo = tipo;
+        }
+    }
+}
+
+function atualizarExibicaoMatriculasEncontradas() {
+    var html = "";
+    if (arrayMatriculasUnicas.length > 0) {
+        //language=HTML
+        html += "<table class='w3-table w3-striped w3-margin-bottom'>";
+        //language=HTML
+        html += "<tr><th>Matrícula</th><th>Tipo</th></tr>";
+
+        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
+            var matricula = arrayMatriculasUnicas[i].matricula;
+            //language=HTML
+            html += "<tr><td>" + matricula + "</td><td>" +
+                "<input type='radio' name='tipo_" + matricula + "' value='servidor'     class='w3-radio' onchange='alterarTipoMatricula(\"" + matricula + "\", this.value)' checked><label class='w3-margin-right'>Servidor</label>" +
+                "<input type='radio' name='tipo_" + matricula + "' value='terceirizado' class='w3-radio' onchange='alterarTipoMatricula(\"" + matricula + "\", this.value)'><label>Terceirizado</label></td></tr>"
+        }
+        html += "</table>";
+    } else {
+    //language=HTML
+    html += "<div class='w3-panel w3-pale-blue w3-center'><p>Nenhuma matrícula identificada!</p></div>";
+}
+
+
+    containerListaMatriculasUnicas.innerHTML = html;
 }
 
 function carregarDadosTela() {
     obterDadosTextArea();
     atualizarQuantidadeRegistros();
-    atualizarQuantidadeMatriculas();
+    atualizarDadosMatriculas();
+    atualizarExibicaoMatriculasEncontradas();
 }
 
 carregarDadosTela();
