@@ -18,36 +18,38 @@ function obterDadosTextArea() {
 }
 
 function separarMatriculas() {
-    consertarMatricula(arrayMatriculasServidores);
-    consertarMatricula(arrayMatriculasTerceirizados);
+    document.getElementById("modalDownload").style.display = 'block';
 
-    var arrayRegistroPontoServidor = arrayRegistrosPonto.filter(function(registroPonto) {
-        var isRegistroServidor = false;
-        var matriculaRegistro = registroPonto.substr(9, 6);
-        for (var i = 0; i < arrayMatriculasServidores.length; i++) {
-            if (matriculaRegistro.includes(arrayMatriculasServidores[i])) {
-                isRegistroServidor = true;
-                break;
-            }
-        }
-        return isRegistroServidor;
-    });
-    console.log(arrayRegistroPontoServidor);
-
-    var arrayRegistroPontoTerceirizado = arrayRegistrosPonto.filter(function(registroPonto) {
-        var isRegistroTerceirizado = false;
-        var matriculaRegistro = registroPonto.substr(9, 6);
-        for (var i = 0; i < arrayMatriculasTerceirizados.length; i++) {
-            if (matriculaRegistro.includes(arrayMatriculasTerceirizados[i])) {
-                isRegistroTerceirizado = true;
-                break;
-            }
-        }
-        return isRegistroTerceirizado;
-    });
-    console.log(arrayRegistroPontoTerceirizado);
-
-    identificarRegistrosDesconhecidos(arrayRegistrosPonto, arrayRegistroPontoServidor, arrayRegistroPontoTerceirizado);
+    // consertarMatricula(arrayMatriculasServidores);
+    // consertarMatricula(arrayMatriculasTerceirizados);
+    //
+    // var arrayRegistroPontoServidor = arrayRegistrosPonto.filter(function(registroPonto) {
+    //     var isRegistroServidor = false;
+    //     var matriculaRegistro = registroPonto.substr(9, 6);
+    //     for (var i = 0; i < arrayMatriculasServidores.length; i++) {
+    //         if (matriculaRegistro.includes(arrayMatriculasServidores[i])) {
+    //             isRegistroServidor = true;
+    //             break;
+    //         }
+    //     }
+    //     return isRegistroServidor;
+    // });
+    // console.log(arrayRegistroPontoServidor);
+    //
+    // var arrayRegistroPontoTerceirizado = arrayRegistrosPonto.filter(function(registroPonto) {
+    //     var isRegistroTerceirizado = false;
+    //     var matriculaRegistro = registroPonto.substr(9, 6);
+    //     for (var i = 0; i < arrayMatriculasTerceirizados.length; i++) {
+    //         if (matriculaRegistro.includes(arrayMatriculasTerceirizados[i])) {
+    //             isRegistroTerceirizado = true;
+    //             break;
+    //         }
+    //     }
+    //     return isRegistroTerceirizado;
+    // });
+    // console.log(arrayRegistroPontoTerceirizado);
+    //
+    // identificarRegistrosDesconhecidos(arrayRegistrosPonto, arrayRegistroPontoServidor, arrayRegistroPontoTerceirizado);
 }
 
 function consertarMatricula(arrayMatricula) {
