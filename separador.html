@@ -6,16 +6,40 @@
     <link rel="stylesheet" href="w3.css">
 </head>
 <body>
-<!--<form>-->
-    <!--<label for="registrosPonto">Registros do ponto:</label><br>-->
-    <!--<textarea name="registrosPonto" id="registrosPonto" cols="35" rows="10"></textarea>-->
-<!--</form>-->\
 
-<form onsubmit="download(this['name'].value, this['text'].value)">
-    <input type="text" name="name" value="test.txt">
-    <textarea name="text"></textarea>
-    <input type="submit" value="Download">
-</form>
+<div class="w3-container w3-blue-gray w3-margin-bottom">
+    <header><h2>Separador de registros de ponto</h2></header>
+</div>
+<div class="w3-content">
+    <div class="w3-card-4 w3-margin-bottom">
+        <header class="w3-container w3-blue-grey">
+            <h2>Lista original</h2>
+        </header>
+        <div class="w3-container">
+            <label class="w3-label" for="registrosPonto">Registros do ponto:</label><br>
+            <textarea class="w3-input w3-margin-bottom" name="registrosPonto" id="registrosPonto" cols="35" rows="10" placeholder="Cole aqui os registros da lista original"></textarea>
+
+            <!--<form onsubmit="download(this['name'].value, this['text'].value)">-->
+            <!--<input type="text" name="name" value="test.txt">-->
+            <!--<textarea name="text"></textarea>-->
+            <!--<input type="submit" value="Download">-->
+            <!--</form>-->
+        </div>
+    </div>
+    <div class="w3-row-padding">
+        <div class="w3-card-4 w3-margin-bottom w3-col s6">
+            <header class="w3-container w3-blue-grey" style="width: 100%">
+                <h2>Matrículas servidores</h2>
+            </header>
+        </div>
+
+        <div class="w3-card-4 w3-margin-bottom w3-col s6">
+            <header class="w3-container w3-blue-grey">
+                <h2>Matrículas terceirizados</h2>
+            </header>
+        </div>
+    </div>
+</div>
 
 <script language="JavaScript">
     function download(filename, text) {
