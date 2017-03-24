@@ -10,8 +10,8 @@
 <div class="w3-container w3-blue-gray w3-margin-bottom w3-card-4">
     <header><h2>Separador de registros de ponto</h2></header>
 </div>
-<div class="w3-content w3-row">
-    <div class="w3-margin-bottom w3-col s5 w3-margin-right w3-card-4">
+<div class="w3-row" style="margin-left: 3%; margin-right: 3%">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4 w3-margin-right">
         <header class="w3-container w3-blue-grey">
             <h3 id="quantidadeRegistros">Registros do ponto</h3>
         </header>
@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="w3-margin-bottom w3-col s5 w3-margin-left w3-card-4">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4 w3-margin-right">
         <header class="w3-container w3-blue-grey">
             <h3 id="quantidadeMatriculas">Matrículas encontradas</h3>
         </header>
@@ -30,27 +30,17 @@
             <div class="w3-content" id="containerListaMatriculasUnicas"></div>
         </div>
         <div class="w3-block w3-center w3-margin-bottom">
-            <button class="w3-button w3-center" onclick="separarMatriculas()">Separar registros</button>
+            <button class="w3-button" id="btnSeparacao" onclick="separarMatriculas()">Separar registros</button>
         </div>
     </div>
 
-    <div class="w3-content w3-margin-bottom w3-col s5 w3-card-4" style="margin-left: 25%; margin-right: 25%">
-        <header class="w3-container w3-blue-gray">
-            <span onclick="document.getElementById('modalDownload').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-            <h3>Download de registros separados</h3>
+    <div class="w3-margin-bottom w3-col s3 w3-card-4">
+        <header class="w3-container w3-blue-gray w3-margin-bottom">
+            <h3>Registros separados</h3>
         </header>
-    </div>
-</div>
-
-<div id="modalDownload" class="w3-modal">
-    <div class="w3-modal-content w3-card-4">
-        <header class="w3-container w3-blue-gray">
-            <span onclick="document.getElementById('modalDownload').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-            <h3>Download de registros separados</h3>
-        </header>
-        <div class="w3-container w3-center">
-            <a class="w3-button" id="downloadServidores">Servidores</a>
-            <a class="w3-button" id="downloadTerceirizados">Terceirizados</a>
+        <div class="w3-container w3-center w3-margin-bottom">
+            <a href="#" id="btnDownloadServidores"     class="w3-button w3-block w3-margin-bottom">Registros do tipo <b>Servidor</b></a>
+            <a href="#" id="btnDownloadTerceirizados"  class="w3-button w3-block ">Registros do tipo <b>Terceirizado</b></a>
         </div>
     </div>
 </div>

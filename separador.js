@@ -7,6 +7,9 @@ camposForm = {
 var arrayRegistrosPonto;
 var arrayMatriculasUnicas;
 var containerListaMatriculasUnicas = document.getElementById("containerListaMatriculasUnicas");
+var btnSeparacao = document.getElementById("btnSeparacao");
+var btnDownloadServidores = document.getElementById("btnDownloadServidores");
+var btnDownloadTerceirizados = document.getElementById("btnDownloadTerceirizados");
 
 function obterDadosTextArea() {
     arrayRegistrosPonto = camposForm.txtRegistrosPonto.value.split("\n");
@@ -75,17 +78,17 @@ function separarMatriculas() {
         return isRegistroTerceirizado;
     });
 
-    var btnDownloadServidores = document.getElementById("downloadServidores");
+
     btnDownloadServidores.setAttribute('href',
         'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoServidor)));
     btnDownloadServidores.setAttribute('download', 'registros_servidor_' + Date.now());
+    mudarEstadoBotao(btnDownloadServidores, true);
 
-    var btnDownloadTerceirizados = document.getElementById("downloadTerceirizados");
+
     btnDownloadTerceirizados.setAttribute('href',
         'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoTerceirizado)));
     btnDownloadTerceirizados.setAttribute('download', 'registros_terceirizado_' + Date.now());
-
-    document.getElementById("modalDownload").style.display = 'block';
+    mudarEstadoBotao(btnDownloadTerceirizados, true);
 }
 
 function gerarTextoDownload(arrayRegistros) {
@@ -96,80 +99,39 @@ function gerarTextoDownload(arrayRegistros) {
     return texto;
 }
 
-function consertarMatricula(arrayMatricula) {
-    for (var i = 0; i < arrayMatricula.length; i++) {
-        arrayMatricula[i] = "000000" + arrayMatricula[i];
-        arrayMatricula[i] = arrayMatricula[i].slice(-6);
-    }
-}
-
-function identificarRegistrosDesconhecidos(arrayRegistrosPonto, arrayRegistrosServidores, arrayRegistrosTerceirizados) {
-    var arrayRegistrosDesconhecidos = arrayRegistrosPonto.filter(function (registroPonto) {
-        var isRegistroDesconhecido = true;
-        for (var i = 0; i < arrayRegistrosServidores.length; i++) {
-            if (registroPonto === arrayRegistrosServidores[i]) {
-                isRegistroDesconhecido = false;
-                break;
-            }
-        }
-
-        if (isRegistroDesconhecido) {
-            for (i = 0; i < arrayRegistrosTerceirizados.length; i++) {
-                if (registroPonto === arrayRegistrosTerceirizados[i]) {
-                    isRegistroDesconhecido = false;
-                    break;
-                }
-            }
-        }
-        return isRegistroDesconhecido;
-    });
-
-    return arrayRegistrosDesconhecidos;
-}
-
-function gerarConteudoArquivoSaida(arrayRegistrosSeparados) {
-    var conteudo;
-
-    for (var i = 0; i < arrayRegistrosSeparados.length; i++) {
-        conteudo += arrayRegistrosSeparados[i] + "\n";
-    }
-
-    return conteudo;
-}
-
 function atualizarDadosMatriculas() {
     var alertaQuantidadeMatriculas = document.getElementById("quantidadeMatriculas");
 
     var promiseQuantidadeMatriculasUnicas = new Promise((resolve, reject) => {
-        if (arrayRegistrosPonto.length === 1 && arrayRegistrosPonto[0].length === 0) {
-            resolve(0);
-        }
+            if (arrayRegistrosPonto.length === 1 && arrayRegistrosPonto[0].length === 0) {
+        resolve(0);
+    }
 
-        arrayMatriculasUnicas = [];
-        for (var i = 0; i < arrayRegistrosPonto.length; i++) {
-            var matriculaAtual = arrayRegistrosPonto[i].substr(9, 6);
-            var isInedita = true;
-            for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
-                if (arrayMatriculasUnicas[j] === matriculaAtual) {
-                    isInedita = false
-                }
-            }
-
-            if (isInedita) {
-                arrayMatriculasUnicas.push(matriculaAtual);
-            }
-        }
-        arrayMatriculasUnicas.sort();
-
-        for (i = 0; i < arrayMatriculasUnicas.length; i++) {
-            arrayMatriculasUnicas[i] = {
-                matricula: arrayMatriculasUnicas[i],
-                tipo: "servidor"
+    arrayMatriculasUnicas = [];
+    for (var i = 0; i < arrayRegistrosPonto.length; i++) {
+        var matriculaAtual = arrayRegistrosPonto[i].substr(9, 6);
+        var isInedita = true;
+        for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
+            if (arrayMatriculasUnicas[j] === matriculaAtual) {
+                isInedita = false
             }
         }
 
-        resolve(arrayMatriculasUnicas.length);
-    });
+        if (isInedita) {
+            arrayMatriculasUnicas.push(matriculaAtual);
+        }
+    }
+    arrayMatriculasUnicas.sort();
+
+    for (i = 0; i < arrayMatriculasUnicas.length; i++) {
+        arrayMatriculasUnicas[i] = {
+            matricula: arrayMatriculasUnicas[i],
+            tipo: "servidor"
+        }
+    }
+
+    resolve(arrayMatriculasUnicas.length);
+});
 
     promiseQuantidadeMatriculasUnicas.then(
         function (result) {
@@ -183,7 +145,7 @@ function atualizarQuantidadeRegistros() {
 
     var promiseQuantidadeMatriculasUnicas = new Promise((resolve, reject) => {
             resolve(arrayRegistrosPonto.length);
-    });
+});
 
     promiseQuantidadeMatriculasUnicas.then(
         function (result) {
@@ -217,12 +179,28 @@ function atualizarExibicaoMatriculasEncontradas() {
         }
         html += "</table>";
     } else {
-    //language=HTML
-    html += "<div class='w3-panel w3-pale-blue w3-center'><p>Nenhuma matrícula identificada!</p></div>";
-}
-
+        //language=HTML
+        html += "<div class='w3-panel w3-pale-blue w3-center'><p>Nenhuma matrícula identificada!</p></div>";
+    }
 
     containerListaMatriculasUnicas.innerHTML = html;
+}
+
+function ativarBotaoSeparacao() {
+    mudarEstadoBotao(btnSeparacao, arrayMatriculasUnicas.length > 0);
+}
+
+function desativarBotoesDownload() {
+    mudarEstadoBotao(btnDownloadServidores, false);
+    mudarEstadoBotao(btnDownloadTerceirizados, false);
+}
+
+function mudarEstadoBotao(botao, ativo) {
+    if (ativo) {
+        botao.className = botao.className.replace(/w3-disabled/gi, "");
+    } else {
+        botao.className += " w3-disabled";
+    }
 }
 
 function carregarDadosTela() {
@@ -230,6 +208,8 @@ function carregarDadosTela() {
     atualizarQuantidadeRegistros();
     atualizarDadosMatriculas();
     atualizarExibicaoMatriculasEncontradas();
+    ativarBotaoSeparacao();
+    desativarBotoesDownload()
 }
 
 carregarDadosTela();
