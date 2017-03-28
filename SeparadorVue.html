@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Vue</title>
+</head>
+<body style="background-color: white">
+<div id="divListaRegistros">
+    <textarea name="txtListaRegistros" id="txtListaRegistros" cols="33" rows="10"
+              placeholder="Cole aqui todos os registros do ponto" v-model="txtListaRegistrosPonto"></textarea>
+    <p>Registros separados: {{ totalRegistrosPonto }}</p>
+
+</div>
+
+<script type="text/x-template" id="tabelaMatriculasUnicas">
+    <table>
+        <tr><th>Matrícula</th><th>Tipo</th></tr>
+        <tr v-for="matricula in arrayMatriculasUnicas">
+            <linha-tabela-matriculas-unicas
+                    :matricula="matricula.matricula"
+                    :tipo="matricula.tipo">
+            </linha-tabela-matriculas-unicas>
+        </tr>
+    </table>
+</script>
+
+<script src="vue.js"></script>
+<script src="separador_vue.js"></script>
+
+</body>
+</html>
