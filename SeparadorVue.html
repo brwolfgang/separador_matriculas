@@ -1,31 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Teste Vue</title>
+    <title>Separador de Registros de Ponto</title>
+    <link rel="stylesheet" href="w3.css">
 </head>
 <body style="background-color: white">
-<div id="divListaRegistros">
-    <textarea name="txtListaRegistros" id="txtListaRegistros" cols="33" rows="10"
-              placeholder="Cole aqui todos os registros do ponto" v-model="txtListaRegistrosPonto"></textarea>
-    <p>Registros separados: {{ totalRegistrosPonto }}</p>
-
+<div id="separadorApp">
+    <div class="w3-container w3-blue-gray w3-margin-bottom w3-card-4">
+        <header><h2>Separador de registros de ponto</h2></header>
+    </div>
+    <div class="w3-row" style="margin-left: 3%; margin-right: 3%">
+        <input-lista-registros v-on:input="updateTxtListaRegistrosPonto"></input-lista-registros>
+        <lista-matriculas-unicas :array-registros-ponto="arrayRegistrosPonto"></lista-matriculas-unicas>
+    </div>
 </div>
-
-<script type="text/x-template" id="tabelaMatriculasUnicas">
-    <table>
-        <tr><th>Matrícula</th><th>Tipo</th></tr>
-        <tr v-for="matricula in arrayMatriculasUnicas">
-            <linha-tabela-matriculas-unicas
-                    :matricula="matricula.matricula"
-                    :tipo="matricula.tipo">
-            </linha-tabela-matriculas-unicas>
-        </tr>
-    </table>
-</script>
-
+</body>
 <script src="vue.js"></script>
 <script src="separador_vue.js"></script>
-
-</body>
-</html>
