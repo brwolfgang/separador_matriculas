@@ -31,10 +31,10 @@ Vue.component('lista-matriculas-unicas', {
     computed: {
         arrayMatriculasUnicas: function () {
             arrayMatriculasUnicas = [];
-            for (let i = 0; i < this.arrayRegistrosPonto.length; i++) {
+            for (i in this.arrayRegistrosPonto) {
                 let matriculaAtual = this.arrayRegistrosPonto[i].substr(9, 6);
                 let isInedita = true;
-                for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
+                for (j in arrayMatriculasUnicas) {
                     if (arrayMatriculasUnicas[j] === matriculaAtual) {
                         isInedita = false
                     }
@@ -47,13 +47,12 @@ Vue.component('lista-matriculas-unicas', {
 
             arrayMatriculasUnicas.sort();
 
-            for (i = 0; i < arrayMatriculasUnicas.length; i++) {
+            for (i in arrayMatriculasUnicas) {
                 arrayMatriculasUnicas[i] = {
                     matricula: arrayMatriculasUnicas[i],
                     tipo: "servidor"
                 }
             }
-
             return arrayMatriculasUnicas;
         }
     },
@@ -74,7 +73,9 @@ Vue.component('download-arquivos', {
     data: function () {
         return {
             nomeArquivoServidores: '',
-            nomeArquivoTerceirizados: ''
+            nomeArquivoTerceirizados: '',
+            totalRegistrosServidores: 0,
+            totalRegistrosTerceirizados: 0
         };
     },
     methods: {
@@ -90,7 +91,7 @@ Vue.component('download-arquivos', {
 
             for (i in this.arrayRegistrosPonto) {
                 var matriculaRegistro = this.arrayRegistrosPonto[i].substr(9, 6);
-                for (j in this.matriculasTerceirizados) {
+                for (j in arrayMatriculas) {
                     if (matriculaRegistro.includes(arrayMatriculas[j].matricula)) {
                         registrosFiltrados.push(this.arrayRegistrosPonto[i]);
                         break;
@@ -119,14 +120,16 @@ Vue.component('download-arquivos', {
             return true;
         },
         registrosServidores: function () {
-            var registrosServidores = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            var arrayRegistrosServidores = this.filtrarRegistrosPorMatriculas(this.matriculasServidores);
             this.nomeArquivoServidores = 'registros_servidor_' + Date.now() + '.txt';
-            return this.gerarHrefDownload(registrosServidores);
+            this.totalRegistrosServidores = arrayRegistrosServidores.length;
+            return this.gerarHrefDownload(arrayRegistrosServidores);
         },
         registrosTerceirizados: function () {
-            var registrosTerceirizados = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            var arrayRegistrosTerceirizados = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
             this.nomeArquivoTerceirizados = 'registros_terceirizados_' + Date.now() + '.txt';
-            return this.gerarHrefDownload(registrosTerceirizados);
+            this.totalRegistrosTerceirizados = arrayRegistrosTerceirizados.length;
+            return this.gerarHrefDownload(arrayRegistrosTerceirizados);
         }
     }
 });

@@ -78,11 +78,11 @@
             <a id="btnDownloadServidores"
                :href="registrosServidores"
                :download="nomeArquivoServidores"
-               class="w3-button w3-block w3-margin-bottom">Registros do tipo <b>Servidor</b></a>
+               class="w3-button w3-block w3-margin-bottom">Registros do tipo <b>Servidor</b> ({{ totalRegistrosServidores }})</a>
             <a id="btnDownloadTerceirizados"
                :href="registrosTerceirizados"
                :download="nomeArquivoTerceirizados"
-               class="w3-button w3-block ">Registros do tipo <b>Terceirizado</b></a>
+               class="w3-button w3-block ">Registros do tipo <b>Terceirizado</b> ({{ totalRegistrosTerceirizados }})</a>
         </div>
     </div>
 </script>
