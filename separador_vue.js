@@ -1,21 +1,5 @@
 Vue.component('input-lista-registros', {
-    template:
-        `
-            <div id="listaRegistros" class="w3-margin-bottom w3-col s4 w3-card-4 w3-margin-right">
-                <header class="w3-container w3-blue-grey">
-                    <h3 id="quantidadeRegistros">Registros do ponto ({{ totalRegistrosPonto }})</h3>
-                </header>
-                <div class="w3-container">
-                            <textarea
-                                    class="w3-input w3-margin-bottom"
-                                    cols="33" rows="10"
-                                    placeholder="Cole aqui todos os registros do ponto certificando-se de que há apenas um por linha"
-                                    v-model="listaRegistrosPonto"
-                                    v-on:input="updateListaRegistros($event.target.value)">
-                            </textarea>
-                </div>
-            </div>
-        `,
+    template: '#inputListaRegistros',
     data: function () {
         return {
             listaRegistrosPonto: ''
@@ -40,37 +24,10 @@ Vue.component('input-lista-registros', {
 });
 
 Vue.component('lista-matriculas-unicas', {
+    template: '#tabelaMatriculasUnicas',
     props: {
         arrayRegistrosPonto: Array
     },
-    template:
-        `
-            <div id="tabelaMatriculasUnicas" class="w3-margin-bottom w3-col s4 w3-card-4 w3-margin-right">
-                <header class="w3-container w3-blue-grey">
-                    <h3 id="quantidadeMatriculas">Matrículas ({{ arrayMatriculasUnicas.length }})</h3>
-                </header>
-                <div class="w3-container">
-                    <div class="w3-content">
-                        <table v-if="arrayMatriculasUnicas.length > 0" class='w3-table w3-striped w3-margin-bottom'>
-                            <tr><th>Matrícula</th><th>Tipo</th></tr>
-                            <tr v-for="funcionario in arrayMatriculasUnicas">
-                                <td>{{ funcionario.matricula }}</td>
-                                <td>
-                                    <input type="radio" v-bind:name="funcionario.matricula" value="servidor" class='w3-radio' checked><label class='w3-margin-right'>Servidor</label>
-                                    <input type="radio" v-bind:name="funcionario.matricula" value="terceirizado" class='w3-radio'><label>Terceirizado</label>
-                                </td>
-                            </tr>
-                        </table>
-                        <div v-else class='w3-panel w3-pale-blue w3-center'>
-                            <p>Nenhuma matrícula identificada!</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="w3-block w3-center w3-margin-bottom">
-                    <button class="w3-button" id="btnSeparacao" onclick="separarMatriculas()">Separar registros</button>
-                </div>
-            </div>    
-        `,
     computed: {
         arrayMatriculasUnicas: function () {
             arrayMatriculasUnicas = [];
@@ -88,6 +45,8 @@ Vue.component('lista-matriculas-unicas', {
                 }
             }
 
+            arrayMatriculasUnicas.sort();
+
             for (i = 0; i < arrayMatriculasUnicas.length; i++) {
                 arrayMatriculasUnicas[i] = {
                     matricula: arrayMatriculasUnicas[i],
@@ -97,59 +56,93 @@ Vue.component('lista-matriculas-unicas', {
 
             return arrayMatriculasUnicas;
         }
+    },
+    methods: {
+        updateTipoMatricula: function (elemento, index) {
+            this.arrayMatriculasUnicas[index].tipo = elemento.value;
+            this.$emit('registro-atualizado', this.arrayMatriculasUnicas);
+        }
     }
 });
-// var compRegistrosPonto = new Vue({
-//     el: '#listaRegistros',
-//     data: {
-//         txtListaRegistrosPonto: '',
-//     },
-//     computed: {
-//         arrayRegistrosPonto: function () {
-//             let registros = this.txtListaRegistrosPonto.split("\n");
-//             return registros.filter(function (registroPonto) {
-//                 return registroPonto.length === 33;
-//             })
-//         },
-//         totalRegistrosPonto: function () {
-//             return this.arrayRegistrosPonto.length;
-//         },
-//         arrayMatriculasUnicas: function () {
-//             arrayMatriculasUnicas = [];
-//             for (let i = 0; i < this.arrayRegistrosPonto.length; i++) {
-//                 let matriculaAtual = this.arrayRegistrosPonto[i].substr(9, 6);
-//                 let isInedita = true;
-//                 for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
-//                     if (arrayMatriculasUnicas[j] === matriculaAtual) {
-//                         isInedita = false
-//                     }
-//                 }
-//
-//                 if (isInedita) {
-//                     arrayMatriculasUnicas.push(matriculaAtual);
-//                 }
-//             }
-//
-//             for (i = 0; i < arrayMatriculasUnicas.length; i++) {
-//                 arrayMatriculasUnicas[i] = {
-//                     matricula: arrayMatriculasUnicas[i],
-//                     tipo: "servidor"
-//                 }
-//             }
-//
-//             return arrayMatriculasUnicas;
-//         }
-//     }
-// });
+
+Vue.component('download-arquivos', {
+    template: '#downloadArquivos',
+    props: {
+        arrayMatriculasUnicas: Array,
+        arrayRegistrosPonto: Array
+    },
+    data: function () {
+        return {
+            nomeArquivoServidores: '',
+            nomeArquivoTerceirizados: ''
+        };
+    },
+    methods: {
+        gerarHrefDownload: function(arrayRegistrosPonto){
+            var texto = '';
+            for (i in arrayRegistrosPonto) {
+                texto += arrayRegistrosPonto[i] + '\n'
+            }
+            return 'data:text/plain;charset=utf-8,' + encodeURIComponent(texto);
+        },
+        filtrarRegistrosPorMatriculas: function (arrayMatriculas) {
+            var registrosFiltrados = [];
+
+            for (i in this.arrayRegistrosPonto) {
+                var matriculaRegistro = this.arrayRegistrosPonto[i].substr(9, 6);
+                for (j in this.matriculasTerceirizados) {
+                    if (matriculaRegistro.includes(arrayMatriculas[j].matricula)) {
+                        registrosFiltrados.push(this.arrayRegistrosPonto[i]);
+                        break;
+                    }
+                }
+            }
+            return registrosFiltrados;
+        }
+    },
+    computed: {
+        matriculasServidores: function() {
+            return this.arrayMatriculasUnicas.filter(function (elemento) {
+                return elemento.tipo === 'servidor';
+            });
+        },
+        matriculasTerceirizados: function () {
+            return this.arrayMatriculasUnicas.filter(function (elemento) {
+                return elemento.tipo === 'terceirizado';
+            });
+        },
+        existeDivergenciaMatriculas: function() {
+            if (this.matriculasServidores.length === 0 || this.matriculasTerceirizados.length === 0) {
+                return false;
+            }
+
+            return true;
+        },
+        registrosServidores: function () {
+            var registrosServidores = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            this.nomeArquivoServidores = 'registros_servidor_' + Date.now() + '.txt';
+            return this.gerarHrefDownload(registrosServidores);
+        },
+        registrosTerceirizados: function () {
+            var registrosTerceirizados = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            this.nomeArquivoTerceirizados = 'registros_terceirizados_' + Date.now() + '.txt';
+            return this.gerarHrefDownload(registrosTerceirizados);
+        }
+    }
+});
 
 new Vue({
     el: '#separadorApp',
     data: {
-        txtListaRegistrosPonto: ''
+        txtListaRegistrosPonto: '',
+        arrayMatriculasDivergentes: []
     },
     methods: {
         updateTxtListaRegistrosPonto: function(value) {
             this.txtListaRegistrosPonto = value;
+        },
+        updateArrayMatriculasDivergentes: function (value) {
+            this.arrayMatriculasDivergentes = value;
         }
     },
     computed: {

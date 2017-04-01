@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<head>
+<head xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
     <meta charset="UTF-8">
     <title>Separador de Registros de Ponto</title>
     <link rel="stylesheet" href="w3.css">
@@ -10,10 +10,86 @@
         <header><h2>Separador de registros de ponto</h2></header>
     </div>
     <div class="w3-row" style="margin-left: 3%; margin-right: 3%">
-        <input-lista-registros v-on:input="updateTxtListaRegistrosPonto"></input-lista-registros>
-        <lista-matriculas-unicas :array-registros-ponto="arrayRegistrosPonto"></lista-matriculas-unicas>
+        <input-lista-registros
+                v-on:input="updateTxtListaRegistrosPonto"
+                class="w3-margin-right">
+        </input-lista-registros>
+        <lista-matriculas-unicas
+                :array-registros-ponto="arrayRegistrosPonto"
+                @registro-atualizado="updateArrayMatriculasDivergentes"
+                class="w3-margin-right">
+        </lista-matriculas-unicas>
+        <download-arquivos
+                :array-matriculas-unicas="arrayMatriculasDivergentes"
+                :array-registros-ponto="arrayRegistrosPonto">
+        </download-arquivos>
     </div>
 </div>
+
+<script type="text/x-template" id="inputListaRegistros">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4">
+        <header class="w3-container w3-blue-grey">
+            <h3 id="quantidadeRegistros">
+                Registros do ponto ({{ totalRegistrosPonto }})
+            </h3>
+        </header>
+        <div class="w3-container">
+               <textarea
+                       class="w3-input w3-margin-bottom"
+                       cols="33" rows="10"
+                       placeholder="Cole aqui todos os registros do ponto certificando-se de que há apenas um por linha"
+                       v-model="listaRegistrosPonto"
+                       v-on:input="updateListaRegistros($event.target.value)">
+                </textarea>
+        </div>
+    </div>
+</script>
+<script type="text/x-template" id="tabelaMatriculasUnicas">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4">
+        <header class="w3-container w3-blue-grey">
+            <h3 id="quantidadeMatriculas">Matrículas ({{ arrayMatriculasUnicas.length }})</h3>
+        </header>
+        <div class="w3-container">
+            <div class="w3-content">
+                <table v-if="arrayMatriculasUnicas.length > 0"
+                       class="w3-table w3-striped w3-margin-bottom w3-bordered">
+                    <tr><th>Matrícula</th><th>Tipo</th></tr>
+                    <tr v-for="(funcionario, index) in arrayMatriculasUnicas" :key="funcionario.matricula">
+                        <td>{{ funcionario.matricula }}</td>
+                        <td>
+                            <input type="radio" v-bind:name="funcionario.matricula" @click="updateTipoMatricula($event.target, index)" value="servidor" class='w3-radio' checked><label class='w3-margin-right'>Servidor</label>
+                            <input type="radio" v-bind:name="funcionario.matricula" @click="updateTipoMatricula($event.target, index)" value="terceirizado" class='w3-radio'><label>Terceirizado</label>
+                        </td>
+                    </tr>
+                </table>
+                <div v-else class='w3-panel w3-pale-blue w3-center'>
+                    <p>Nenhuma matrícula identificada!</p>
+                </div>
+            </div>
+        </div>
+        <!--<div v-show="existeDivergenciaMatriculas"-->
+        <!--class="w3-block w3-center w3-margin-bottom">-->
+        <!--<button class="w3-button" id="btnSeparacao" onclick="separarMatriculas()">Separar registros</button>-->
+        <!--</div>-->
+    </div>
+</script>
+<script type="text/x-template" id="downloadArquivos">
+    <div class="w3-margin-bottom w3-col s3 w3-card-4" v-show="existeDivergenciaMatriculas">
+        <header class="w3-container w3-blue-gray w3-margin-bottom">
+            <h3>Registros separados</h3>
+        </header>
+        <div class="w3-container w3-center w3-margin-bottom">
+            <a id="btnDownloadServidores"
+               :href="registrosServidores"
+               :download="nomeArquivoServidores"
+               class="w3-button w3-block w3-margin-bottom">Registros do tipo <b>Servidor</b></a>
+            <a id="btnDownloadTerceirizados"
+               :href="registrosTerceirizados"
+               :download="nomeArquivoTerceirizados"
+               class="w3-button w3-block ">Registros do tipo <b>Terceirizado</b></a>
+        </div>
+    </div>
+</script>
 </body>
 <script src="vue.js"></script>
 <script src="separador_vue.js"></script>
