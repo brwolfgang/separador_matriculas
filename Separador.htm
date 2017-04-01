@@ -45,7 +45,7 @@
     </div>
 </script>
 <script type="text/x-template" id="tabelaMatriculasUnicas">
-    <div class="w3-margin-bottom w3-col s4 w3-card-4">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4" v-if="arrayRegistrosPonto.length > 0">
         <header class="w3-container w3-blue-grey">
             <h3 id="quantidadeMatriculas">Matrículas ({{ arrayMatriculasUnicas.length }})</h3>
         </header>
@@ -67,10 +67,6 @@
                 </div>
             </div>
         </div>
-        <!--<div v-show="existeDivergenciaMatriculas"-->
-        <!--class="w3-block w3-center w3-margin-bottom">-->
-        <!--<button class="w3-button" id="btnSeparacao" onclick="separarMatriculas()">Separar registros</button>-->
-        <!--</div>-->
     </div>
 </script>
 <script type="text/x-template" id="downloadArquivos">
