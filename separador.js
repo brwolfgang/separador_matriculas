@@ -1,215 +1,155 @@
-camposForm = {
-    txtRegistrosPonto: document.getElementById("registrosPonto"),
-    txtMatriculasServidores: document.getElementById("matServidores"),
-    txtMatriculasTerceirizados: document.getElementById("matTerceirizados")
-};
-
-var arrayRegistrosPonto;
-var arrayMatriculasUnicas;
-var containerListaMatriculasUnicas = document.getElementById("containerListaMatriculasUnicas");
-var btnSeparacao = document.getElementById("btnSeparacao");
-var btnDownloadServidores = document.getElementById("btnDownloadServidores");
-var btnDownloadTerceirizados = document.getElementById("btnDownloadTerceirizados");
-
-function obterDadosTextArea() {
-    arrayRegistrosPonto = camposForm.txtRegistrosPonto.value.split("\n");
-    arrayRegistrosPonto = arrayRegistrosPonto.filter(function(registro) {
-        return registro.trim().length === 33;
-    })
-}
-
-function separarMatriculas() {
-    if (arrayRegistrosPonto.length === 0) {
-        alert("Nenhum registro a separar.");
-        return;
-    }
-
-    if (arrayMatriculasUnicas.length === 0) {
-        alert("Nenhuma matrícula a ser utilizada na separação.");
-        return;
-    }
-
-    var qtdeServidores = 0;
-    var qtdeTerceirizados = 0;
-    for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
-        if (arrayMatriculasUnicas[i].tipo === "servidor") {
-            qtdeServidores++;
-            continue;
+Vue.component('input-lista-registros', {
+    template: '#inputListaRegistros',
+    data: function () {
+        return {
+            listaRegistrosPonto: ''
         }
-        if (arrayMatriculasUnicas[i].tipo === "terceirizado") {
-            qtdeTerceirizados++;
+    },
+    methods: {
+        updateListaRegistros: function (valor) {
+            this.$emit('input', valor);
+        }
+    },
+    computed: {
+        arrayRegistrosPonto: function () {
+            let registros = this.listaRegistrosPonto.split("\n");
+            return registros.filter(function (registroPonto) {
+                return registroPonto.length === 33;
+            })
+        },
+        totalRegistrosPonto: function () {
+            return this.arrayRegistrosPonto.length;
         }
     }
-
-    if (qtdeServidores === 0) {
-        alert("Todas as matrículas são do tipo TERCEIRIZADO, nada a separar.");
-        return;
-    }
-    if (qtdeTerceirizados === 0) {
-        alert("Todas as matrículas são do tipo SERVIDOR, nada a separar.");
-        return;
-    }
-
-    var arrayRegistroPontoServidor = arrayRegistrosPonto.filter(function(registroPonto) {
-        var isRegistroServidor = false;
-        var matriculaRegistro = registroPonto.substr(9, 6);
-        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
-            if (arrayMatriculasUnicas[i].tipo === "servidor") {
-                if (matriculaRegistro.includes(arrayMatriculasUnicas[i].matricula)) {
-                    isRegistroServidor = true;
-                    break;
-                }
-            }
-        }
-        return isRegistroServidor;
-    });
-
-    var arrayRegistroPontoTerceirizado = arrayRegistrosPonto.filter(function(registroPonto) {
-        var isRegistroTerceirizado = false;
-        var matriculaRegistro = registroPonto.substr(9, 6);
-        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
-            if (arrayMatriculasUnicas[i].tipo === "terceirizado") {
-                if (matriculaRegistro.includes(arrayMatriculasUnicas[i].matricula)) {
-                    isRegistroTerceirizado = true;
-                    break;
-                }
-            }
-        }
-        return isRegistroTerceirizado;
-    });
-
-
-    btnDownloadServidores.setAttribute('href',
-        'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoServidor)));
-    btnDownloadServidores.setAttribute('download', 'registros_servidor_' + Date.now());
-    mudarEstadoBotao(btnDownloadServidores, true);
-
-
-    btnDownloadTerceirizados.setAttribute('href',
-        'data:text/plain;charset=utf-8,' + encodeURIComponent(gerarTextoDownload(arrayRegistroPontoTerceirizado)));
-    btnDownloadTerceirizados.setAttribute('download', 'registros_terceirizado_' + Date.now());
-    mudarEstadoBotao(btnDownloadTerceirizados, true);
-}
-
-function gerarTextoDownload(arrayRegistros) {
-    var texto = "";
-    for (var i = 0; i < arrayRegistros.length; i++) {
-        texto += arrayRegistros[i] + "\n"
-    }
-    return texto;
-}
-
-function atualizarDadosMatriculas() {
-    var alertaQuantidadeMatriculas = document.getElementById("quantidadeMatriculas");
-
-    var promiseQuantidadeMatriculasUnicas = new Promise((resolve, reject) => {
-            if (arrayRegistrosPonto.length === 1 && arrayRegistrosPonto[0].length === 0) {
-        resolve(0);
-    }
-
-    arrayMatriculasUnicas = [];
-    for (var i = 0; i < arrayRegistrosPonto.length; i++) {
-        var matriculaAtual = arrayRegistrosPonto[i].substr(9, 6);
-        var isInedita = true;
-        for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
-            if (arrayMatriculasUnicas[j] === matriculaAtual) {
-                isInedita = false
-            }
-        }
-
-        if (isInedita) {
-            arrayMatriculasUnicas.push(matriculaAtual);
-        }
-    }
-    arrayMatriculasUnicas.sort();
-
-    for (i = 0; i < arrayMatriculasUnicas.length; i++) {
-        arrayMatriculasUnicas[i] = {
-            matricula: arrayMatriculasUnicas[i],
-            tipo: "servidor"
-        }
-    }
-
-    resolve(arrayMatriculasUnicas.length);
 });
 
-    promiseQuantidadeMatriculasUnicas.then(
-        function (result) {
-            alertaQuantidadeMatriculas.textContent = "Matrículas (" + result + ")";
-        }, null
-    );
-}
+Vue.component('lista-matriculas-unicas', {
+    template: '#tabelaMatriculasUnicas',
+    props: {
+        arrayRegistrosPonto: Array
+    },
+    computed: {
+        arrayMatriculasUnicas: function () {
+            arrayMatriculasUnicas = [];
+            for (let i = 0; i < this.arrayRegistrosPonto.length; i++) {
+                let matriculaAtual = this.arrayRegistrosPonto[i].substr(9, 6);
+                let isInedita = true;
+                for (var j = 0; j < arrayMatriculasUnicas.length; j++) {
+                    if (arrayMatriculasUnicas[j] === matriculaAtual) {
+                        isInedita = false
+                    }
+                }
 
-function atualizarQuantidadeRegistros() {
-    var alertaQuantidadeRegistros = document.getElementById("quantidadeRegistros");
+                if (isInedita) {
+                    arrayMatriculasUnicas.push(matriculaAtual);
+                }
+            }
 
-    var promiseQuantidadeMatriculasUnicas = new Promise((resolve, reject) => {
-            resolve(arrayRegistrosPonto.length);
+            arrayMatriculasUnicas.sort();
+
+            for (i = 0; i < arrayMatriculasUnicas.length; i++) {
+                arrayMatriculasUnicas[i] = {
+                    matricula: arrayMatriculasUnicas[i],
+                    tipo: "servidor"
+                }
+            }
+
+            return arrayMatriculasUnicas;
+        }
+    },
+    methods: {
+        updateTipoMatricula: function (elemento, index) {
+            this.arrayMatriculasUnicas[index].tipo = elemento.value;
+            this.$emit('registro-atualizado', this.arrayMatriculasUnicas);
+        }
+    }
 });
 
-    promiseQuantidadeMatriculasUnicas.then(
-        function (result) {
-            alertaQuantidadeRegistros.textContent = "Registros do ponto (" + result + ")";
-        }
-    );
-}
+Vue.component('download-arquivos', {
+    template: '#downloadArquivos',
+    props: {
+        arrayMatriculasUnicas: Array,
+        arrayRegistrosPonto: Array
+    },
+    data: function () {
+        return {
+            nomeArquivoServidores: '',
+            nomeArquivoTerceirizados: ''
+        };
+    },
+    methods: {
+        gerarHrefDownload: function(arrayRegistrosPonto){
+            var texto = '';
+            for (i in arrayRegistrosPonto) {
+                texto += arrayRegistrosPonto[i] + '\n'
+            }
+            return 'data:text/plain;charset=utf-8,' + encodeURIComponent(texto);
+        },
+        filtrarRegistrosPorMatriculas: function (arrayMatriculas) {
+            var registrosFiltrados = [];
 
-function alterarTipoMatricula(matricula, tipo) {
-    for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
-        if (arrayMatriculasUnicas[i].matricula === matricula) {
-            arrayMatriculasUnicas[i].tipo = tipo;
+            for (i in this.arrayRegistrosPonto) {
+                var matriculaRegistro = this.arrayRegistrosPonto[i].substr(9, 6);
+                for (j in this.matriculasTerceirizados) {
+                    if (matriculaRegistro.includes(arrayMatriculas[j].matricula)) {
+                        registrosFiltrados.push(this.arrayRegistrosPonto[i]);
+                        break;
+                    }
+                }
+            }
+            return registrosFiltrados;
+        }
+    },
+    computed: {
+        matriculasServidores: function() {
+            return this.arrayMatriculasUnicas.filter(function (elemento) {
+                return elemento.tipo === 'servidor';
+            });
+        },
+        matriculasTerceirizados: function () {
+            return this.arrayMatriculasUnicas.filter(function (elemento) {
+                return elemento.tipo === 'terceirizado';
+            });
+        },
+        existeDivergenciaMatriculas: function() {
+            if (this.matriculasServidores.length === 0 || this.matriculasTerceirizados.length === 0) {
+                return false;
+            }
+
+            return true;
+        },
+        registrosServidores: function () {
+            var registrosServidores = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            this.nomeArquivoServidores = 'registros_servidor_' + Date.now() + '.txt';
+            return this.gerarHrefDownload(registrosServidores);
+        },
+        registrosTerceirizados: function () {
+            var registrosTerceirizados = this.filtrarRegistrosPorMatriculas(this.matriculasTerceirizados);
+            this.nomeArquivoTerceirizados = 'registros_terceirizados_' + Date.now() + '.txt';
+            return this.gerarHrefDownload(registrosTerceirizados);
         }
     }
-}
+});
 
-function atualizarExibicaoMatriculasEncontradas() {
-    var html = "";
-    if (arrayMatriculasUnicas.length > 0) {
-        //language=HTML
-        html += "<table class='w3-table w3-striped w3-margin-bottom'>";
-        //language=HTML
-        html += "<tr><th>Matrícula</th><th>Tipo</th></tr>";
-
-        for (var i = 0; i < arrayMatriculasUnicas.length; i++) {
-            var matricula = arrayMatriculasUnicas[i].matricula;
-            //language=HTML
-            html += "<tr><td>" + matricula + "</td><td>" +
-                "<input type='radio' name='tipo_" + matricula + "' value='servidor'     class='w3-radio' onchange='alterarTipoMatricula(\"" + matricula + "\", this.value)' checked><label class='w3-margin-right'>Servidor</label>" +
-                "<input type='radio' name='tipo_" + matricula + "' value='terceirizado' class='w3-radio' onchange='alterarTipoMatricula(\"" + matricula + "\", this.value)'><label>Terceirizado</label></td></tr>"
+new Vue({
+    el: '#separadorApp',
+    data: {
+        txtListaRegistrosPonto: '',
+        arrayMatriculasDivergentes: []
+    },
+    methods: {
+        updateTxtListaRegistrosPonto: function(value) {
+            this.txtListaRegistrosPonto = value;
+        },
+        updateArrayMatriculasDivergentes: function (value) {
+            this.arrayMatriculasDivergentes = value;
         }
-        html += "</table>";
-    } else {
-        //language=HTML
-        html += "<div class='w3-panel w3-pale-blue w3-center'><p>Nenhuma matrícula identificada!</p></div>";
+    },
+    computed: {
+        arrayRegistrosPonto: function(){
+            return this.txtListaRegistrosPonto.split("\n").filter(function (registro) {
+                return registro.length === 33;
+            });
+        }
     }
-
-    containerListaMatriculasUnicas.innerHTML = html;
-}
-
-function ativarBotaoSeparacao() {
-    mudarEstadoBotao(btnSeparacao, arrayMatriculasUnicas.length > 0);
-}
-
-function desativarBotoesDownload() {
-    mudarEstadoBotao(btnDownloadServidores, false);
-    mudarEstadoBotao(btnDownloadTerceirizados, false);
-}
-
-function mudarEstadoBotao(botao, ativo) {
-    if (ativo) {
-        botao.className = botao.className.replace(/w3-disabled/gi, "");
-    } else {
-        botao.className += " w3-disabled";
-    }
-}
-
-function carregarDadosTela() {
-    obterDadosTextArea();
-    atualizarQuantidadeRegistros();
-    atualizarDadosMatriculas();
-    atualizarExibicaoMatriculasEncontradas();
-    ativarBotaoSeparacao();
-    desativarBotoesDownload()
-}
-
-carregarDadosTela();
+});
