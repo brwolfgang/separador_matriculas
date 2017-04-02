@@ -46,7 +46,7 @@
                        cols="33" rows="10"
                        placeholder="Cole aqui todos os registros do ponto certificando-se de que há apenas um por linha"
                        v-model="listaRegistrosPonto"
-                       v-on:input="updateListaRegistros($event.target.value)">
+                       @input="updateListaRegistros($event.target.value)">
                 </textarea>
         </div>
     </div>
