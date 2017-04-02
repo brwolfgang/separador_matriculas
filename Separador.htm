@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <title>Separador de Registros de Ponto</title>
     <link rel="stylesheet" href="w3.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body style="background-color: white">
 <div id="separadorApp">
@@ -17,6 +18,7 @@
         <lista-matriculas-unicas
                 :array-registros-ponto="arrayRegistrosPonto"
                 @registro-atualizado="updateArrayMatriculasDivergentes"
+                @exibir-relatorio-funcionario="exibirRelatorioFuncionario"
                 class="w3-margin-right">
         </lista-matriculas-unicas>
         <download-arquivos
@@ -24,6 +26,11 @@
                 :array-registros-ponto="arrayRegistrosPonto">
         </download-arquivos>
     </div>
+    <relatorio-matricula
+            :funcionario="funcionarioRelatorio"
+            :registros-ponto="arrayRegistrosPonto"
+            @ocultar-relatorio="exibirRelatorioFuncionario">
+    </relatorio-matricula>
 </div>
 
 <script type="text/x-template" id="inputListaRegistros">
@@ -44,33 +51,57 @@
         </div>
     </div>
 </script>
+
 <script type="text/x-template" id="tabelaMatriculasUnicas">
-    <div class="w3-margin-bottom w3-col s4 w3-card-4" v-if="arrayRegistrosPonto.length > 0">
+    <div class="w3-margin-bottom w3-col s4 w3-card-4" v-show="arrayMatriculasUnicas.length > 0">
         <header class="w3-container w3-blue-grey">
             <h3 id="quantidadeMatriculas">Matrículas ({{ arrayMatriculasUnicas.length }})</h3>
         </header>
         <div class="w3-container">
             <div class="w3-content">
-                <table v-if="arrayMatriculasUnicas.length > 0"
-                       class="w3-table w3-striped w3-margin-bottom w3-bordered">
+                <table class="w3-table w3-striped w3-margin-bottom w3-bordered">
                     <tr><th>Matrícula</th><th>Tipo</th></tr>
-                    <tr v-for="(funcionario, index) in arrayMatriculasUnicas" :key="funcionario.matricula">
+                    <tr v-for="funcionario in arrayMatriculasUnicas" :key="funcionario.matricula">
                         <td>{{ funcionario.matricula }}</td>
                         <td>
-                            <input type="radio" v-bind:name="funcionario.matricula" @click="updateTipoMatricula($event.target, index)" value="servidor" class='w3-radio' checked><label class='w3-margin-right'>Servidor</label>
-                            <input type="radio" v-bind:name="funcionario.matricula" @click="updateTipoMatricula($event.target, index)" value="terceirizado" class='w3-radio'><label>Terceirizado</label>
+                            <seletor-tipo-matricula
+                                    :funcionario="funcionario"
+                                    @funcionario-atualizado="funcionarioAtualizado(funcionario)">
+                            </seletor-tipo-matricula>
+                        </td>
+                        <td>
+                            <a href="#" @click="exibirRelatorioFuncionario(funcionario)">
+                                <i class="material-icons">assignment</i>
+                            </a>
                         </td>
                     </tr>
                 </table>
-                <div v-else class='w3-panel w3-pale-blue w3-center'>
-                    <p>Nenhuma matrícula identificada!</p>
-                </div>
             </div>
         </div>
     </div>
 </script>
+
+<script type="text/x-template" id="seletorTipoMatricula">
+    <div>
+        <input type="radio"
+               @click="updateTipoMatricula($event.target)"
+               :name="funcionario.matricula"
+               value="servidor"
+               :checked="isTipoServidor"
+               class='w3-radio'>
+        <label class='w3-margin-right'>Servidor</label>
+        <input type="radio"
+               @click="updateTipoMatricula($event.target)"
+               :name="funcionario.matricula"
+               value="terceirizado"
+               :checked="isTipoTerceirizado"
+               class='w3-radio'>
+        <label>Terceirizado</label>
+    </div>
+</script>
+
 <script type="text/x-template" id="downloadArquivos">
-    <div class="w3-margin-bottom w3-col s3 w3-card-4" v-show="existeDivergenciaMatriculas">
+    <div class="w3-margin-bottom w3-col s3 w3-card-4" v-if="existeDivergenciaMatriculas">
         <header class="w3-container w3-blue-gray w3-margin-bottom">
             <h3>Registros separados</h3>
         </header>
@@ -86,6 +117,30 @@
         </div>
     </div>
 </script>
+
+<script type="text/x-template" id="relatorioMatricula">
+    <div class="w3-modal w3-show" v-if="exibirRelatorio">
+        <div class="w3-modal-content">
+            <header class="w3-container w3-blue-gray">
+              <span class="w3-button w3-display-topright"
+                    @click="ocultarRelatorioFuncionario">&times;</span>
+                <h2>Registros de ponto</h2>
+            </header>
+            <div class="w3-container">
+                <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}</p>
+                <table class="w3-table w3-striped w3-margin-bottom w3-bordered">
+                    <tr><th>Data</th><th>Dia da Semana</th><th>Hora</th></tr>
+                    <tr v-for="registro in registrosPontoMatricula">
+                        <td>{{ registro.data }}</td>
+                        <td>{{ registro.diaSemana }}</td>
+                        <td>{{ registro.hora }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
+
 </body>
 <script src="vue.js"></script>
 <script src="separador.js"></script>

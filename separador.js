@@ -57,8 +57,10 @@ Vue.component('lista-matriculas-unicas', {
         }
     },
     methods: {
-        updateTipoMatricula: function (elemento, index) {
-            this.arrayMatriculasUnicas[index].tipo = elemento.value;
+        exibirRelatorioFuncionario: function (funcionario) {
+            this.$emit('exibir-relatorio-funcionario', funcionario);
+        },
+        funcionarioAtualizado: function (funcionario) {
             this.$emit('registro-atualizado', this.arrayMatriculasUnicas);
         }
     }
@@ -113,6 +115,9 @@ Vue.component('download-arquivos', {
             });
         },
         existeDivergenciaMatriculas: function() {
+            if (this.arrayRegistrosPonto.length === 0) {
+                return false;
+            }
             if (this.matriculasServidores.length === 0 || this.matriculasTerceirizados.length === 0) {
                 return false;
             }
@@ -134,11 +139,96 @@ Vue.component('download-arquivos', {
     }
 });
 
+Vue.component('seletor-tipo-matricula', {
+    template: '#seletorTipoMatricula',
+    props: {
+        funcionario: Object
+    },
+    methods: {
+        updateTipoMatricula: function (radioButton) {
+            this.funcionario.tipo = radioButton.value;
+            this.$emit('funcionario-atualizado');
+        }
+    },
+    computed: {
+        isTipoServidor: function () {
+            return this.funcionario.tipo === 'servidor';
+        },
+        isTipoTerceirizado: function () {
+            return this.funcionario.tipo === 'terceirizado';
+        }
+    }
+});
+
+Vue.component('relatorio-matricula', {
+    template: '#relatorioMatricula',
+    props: {
+        funcionario: Object,
+        registrosPonto: Array
+    },
+    data: function () {
+        return {
+
+        }
+    },
+    methods: {
+        ocultarRelatorioFuncionario: function () {
+            this.$emit('ocultar-relatorio', null);
+        },
+        determinarDiaSemana: function (numeroDiaSemana) {
+            console.log(numeroDiaSemana);
+            switch (numeroDiaSemana) {
+                case 0 : return 'Domingo';
+                case 1 : return 'Segunda-feira';
+                case 2 : return 'Terça-feira';
+                case 3 : return 'Quarta-feira';
+                case 4 : return 'Quinta-feira';
+                case 5 : return 'Sexta-feira';
+                case 6 : return 'Sábado';
+            }
+        },
+        getDataFormatada(data){
+            return data.getDate() + '/' + (data.getMonth() + 1) + '/' + data.getFullYear();
+        },
+        getHoraFormatada(hora){
+            return hora.substr(0, 2) + ':' + hora.substr(2, 2);
+        }
+    },
+    computed: {
+        exibirRelatorio: function () {
+            return this.funcionario !== null;
+        },
+        registrosPontoMatricula: function () {
+            var registrosMatricula = [];
+            for (i in this.registrosPonto) {
+                if (this.registrosPonto[i].substr(9, 6).includes(this.funcionario.matricula)) {
+                    var dataBruta = this.registrosPonto[i].substr(15, 8);
+                    console.log(dataBruta);
+                    var dataObject = new Date(
+                        dataBruta.substr(4, 4),
+                        Number(dataBruta.substr(2, 2)) - 1,
+                        dataBruta.substr(0, 2)
+                    );
+
+                    registrosMatricula.push({
+                        data: this.getDataFormatada(dataObject),
+                        diaSemana: this.determinarDiaSemana(dataObject.getDay()),
+                        hora: this.getHoraFormatada(this.registrosPonto[i].substr(23, 4))
+                    });
+                }
+            }
+
+            return registrosMatricula;
+        }
+    }
+});
+
 new Vue({
     el: '#separadorApp',
     data: {
         txtListaRegistrosPonto: '',
-        arrayMatriculasDivergentes: []
+        arrayMatriculasDivergentes: [],
+        funcionarioRelatorio: null
     },
     methods: {
         updateTxtListaRegistrosPonto: function(value) {
@@ -146,6 +236,9 @@ new Vue({
         },
         updateArrayMatriculasDivergentes: function (value) {
             this.arrayMatriculasDivergentes = value;
+        },
+        exibirRelatorioFuncionario: function (funcionario) {
+            this.funcionarioRelatorio = funcionario;
         }
     },
     computed: {
