@@ -176,7 +176,6 @@ Vue.component('relatorio-matricula', {
             this.$emit('ocultar-relatorio', null);
         },
         determinarDiaSemana: function (numeroDiaSemana) {
-            console.log(numeroDiaSemana);
             switch (numeroDiaSemana) {
                 case 0 : return 'Domingo';
                 case 1 : return 'Segunda-feira';
@@ -203,7 +202,6 @@ Vue.component('relatorio-matricula', {
             for (i in this.registrosPonto) {
                 if (this.registrosPonto[i].substr(9, 6).includes(this.funcionario.matricula)) {
                     var dataBruta = this.registrosPonto[i].substr(15, 8);
-                    console.log(dataBruta);
                     var dataObject = new Date(
                         dataBruta.substr(4, 4),
                         Number(dataBruta.substr(2, 2)) - 1,
