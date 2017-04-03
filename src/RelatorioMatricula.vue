@@ -7,7 +7,9 @@
                 <h2>Registros de ponto</h2>
             </header>
             <div class="w3-container">
-                <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}</p>
+                <div class="w3-panel w3-pale-blue w3-center">
+                    <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}<br>Período: {{ dataPrimeiroRegistro }} à {{ dataUltimoRegistro }}</p>
+                </div>
                 <table class="w3-table w3-striped w3-margin-bottom w3-bordered">
                     <tr><th>Data</th><th>Dia da Semana</th><th>Hora</th></tr>
                     <tr v-for="registro in registrosPontoMatricula">
@@ -78,6 +80,12 @@
                 }
 
                 return registrosMatricula;
+            },
+            dataPrimeiroRegistro: function() {
+                return this.registrosPontoMatricula[0].data;
+            },
+            dataUltimoRegistro: function () {
+                return this.registrosPontoMatricula[this.registrosPontoMatricula.length - 1].data;
             }
         }
     }
