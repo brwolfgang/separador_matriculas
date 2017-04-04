@@ -65,7 +65,7 @@
                 for (let i in arrayMatriculasUnicas) {
                     arrayMatriculasUnicas[i] = {
                         matricula: arrayMatriculasUnicas[i],
-                        tipo: "servidor"
+                        tipo: arrayMatriculasUnicas[i].startsWith('9') ? "terceirizado" : "servidor"
                     }
                 }
                 this.arrayFuncionarios = arrayMatriculasUnicas;
