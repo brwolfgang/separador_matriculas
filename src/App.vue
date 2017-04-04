@@ -10,13 +10,13 @@
       </input-lista-registros>
       <lista-matriculas-unicas
               :array-registros-ponto="arrayRegistrosPonto"
-              @registro-atualizado="updateArrayMatriculasDivergentes"
+              :array-funcionarios="arrayFuncionarios"
               @exibir-relatorio-funcionario="exibirRelatorioFuncionario"
               class="w3-margin-right">
       </lista-matriculas-unicas>
       <download-arquivos
-              :array-matriculas-unicas="arrayMatriculasDivergentes"
-              :array-registros-ponto="arrayRegistrosPonto">
+              :array-registros-ponto="arrayRegistrosPonto"
+              :array-matriculas-unicas="arrayFuncionarios">
       </download-arquivos>
     </div>
     <relatorio-matricula
@@ -32,19 +32,43 @@
         data: function() {
             return {
                 txtListaRegistrosPonto: '',
-                arrayMatriculasDivergentes: [],
+                arrayFuncionarios: [],
                 funcionarioRelatorio: null
             }
         },
         methods: {
             updateTxtListaRegistrosPonto: function(value) {
                 this.txtListaRegistrosPonto = value;
-            },
-            updateArrayMatriculasDivergentes: function (value) {
-                this.arrayMatriculasDivergentes = value;
+                this.criarArrayMatriculas();
             },
             exibirRelatorioFuncionario: function (funcionario) {
                 this.funcionarioRelatorio = funcionario;
+            },
+            criarArrayMatriculas: function () {
+                let arrayMatriculasUnicas = [];
+                for (let i in this.arrayRegistrosPonto) {
+                    let matriculaAtual = this.arrayRegistrosPonto[i].substr(9, 6);
+                    let isInedita = true;
+                    for (let j in arrayMatriculasUnicas) {
+                        if (arrayMatriculasUnicas[j] === matriculaAtual) {
+                            isInedita = false
+                        }
+                    }
+
+                    if (isInedita) {
+                        arrayMatriculasUnicas.push(matriculaAtual);
+                    }
+                }
+
+                arrayMatriculasUnicas.sort();
+
+                for (let i in arrayMatriculasUnicas) {
+                    arrayMatriculasUnicas[i] = {
+                        matricula: arrayMatriculasUnicas[i],
+                        tipo: "servidor"
+                    }
+                }
+                this.arrayFuncionarios = arrayMatriculasUnicas;
             }
         },
         computed: {

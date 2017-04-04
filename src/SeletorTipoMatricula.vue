@@ -25,7 +25,6 @@
         methods: {
             updateTipoMatricula: function (radioButton) {
                 this.funcionario.tipo = radioButton.value;
-                this.$emit('funcionario-atualizado');
             }
         },
         computed: {
