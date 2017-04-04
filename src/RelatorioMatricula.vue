@@ -11,11 +11,13 @@
                     <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}<br>Período: {{ dataPrimeiroRegistro }} à {{ dataUltimoRegistro }}</p>
                 </div>
                 <table class="w3-table w3-striped w3-margin-bottom w3-bordered">
-                    <tr><th>Data</th><th>Dia da Semana</th><th>Hora</th></tr>
+                    <tr><th style="width: 10%; text-align: center">Data</th><th style="width: 20%; text-align: center" >Dia da Semana</th><th style="text-align: center">Registros</th></tr>
                     <tr v-for="registro in registrosPontoMatricula">
-                        <td>{{ registro.data }}</td>
-                        <td>{{ registro.diaSemana }}</td>
-                        <td>{{ registro.hora }}</td>
+                        <td class="w3-center" style="vertical-align: middle">{{ registro.data }}</td>
+                        <td class="w3-center" style="vertical-align: middle">{{ registro.diaSemana }}</td>
+                        <td>
+                            <component :is="tipoListagemRegistros" :horarios="registro.horarios"></component>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -35,10 +37,10 @@
             }
         },
         methods: {
-            ocultarRelatorioFuncionario: function () {
+            ocultarRelatorioFuncionario() {
                 this.$emit('ocultar-relatorio', null);
             },
-            determinarDiaSemana: function (numeroDiaSemana) {
+            determinarDiaSemana(numeroDiaSemana) {
                 switch (numeroDiaSemana) {
                     case 0 : return 'Domingo';
                     case 1 : return 'Segunda-feira';
@@ -54,6 +56,17 @@
             },
             getHoraFormatada(hora){
                 return hora.substr(0, 2) + ':' + hora.substr(2, 2);
+            },
+            extrairDataRegistro(registro){
+                let dataBruta = registro.substr(15, 8);
+                return new Date(
+                    dataBruta.substr(4, 4),
+                    Number(dataBruta.substr(2, 2)) - 1,
+                    dataBruta.substr(0, 2)
+                );
+            },
+            extrairHoraRegistro(registro){
+                return this.getHoraFormatada(registro.substr(23, 4));
             }
         },
         computed: {
@@ -62,23 +75,30 @@
             },
             registrosPontoMatricula: function () {
                 let registrosMatricula = [];
+                let diaAtual = '';
+                let horarios = [];
                 for (let i in this.registrosPonto) {
                     if (this.registrosPonto[i].substr(9, 6).includes(this.funcionario.matricula)) {
-                        let dataBruta = this.registrosPonto[i].substr(15, 8);
-                        let dataObject = new Date(
-                            dataBruta.substr(4, 4),
-                            Number(dataBruta.substr(2, 2)) - 1,
-                            dataBruta.substr(0, 2)
-                        );
-
-                        registrosMatricula.push({
-                            data: this.getDataFormatada(dataObject),
-                            diaSemana: this.determinarDiaSemana(dataObject.getDay()),
-                            hora: this.getHoraFormatada(this.registrosPonto[i].substr(23, 4))
-                        });
+                        let dataRegistro = this.extrairDataRegistro(this.registrosPonto[i]);
+                        let dataRegistroFormatada = this.getDataFormatada(dataRegistro);
+                        let horaRegistro = this.extrairHoraRegistro(this.registrosPonto[i]);
+                        if (diaAtual === '') {
+                            diaAtual = dataRegistroFormatada;
+                        }
+                        if (dataRegistroFormatada === diaAtual) {
+                            horarios.push(horaRegistro);
+                        } else {
+                            diaAtual = dataRegistroFormatada;
+                            registrosMatricula.push({
+                                data: this.getDataFormatada(dataRegistro),
+                                diaSemana: this.determinarDiaSemana(dataRegistro.getDay()),
+                                horarios: horarios
+                            });
+                            horarios = [];
+                            horarios.push(horaRegistro)
+                        }
                     }
                 }
-
                 return registrosMatricula;
             },
             dataPrimeiroRegistro: function() {
@@ -86,6 +106,14 @@
             },
             dataUltimoRegistro: function () {
                 return this.registrosPontoMatricula[this.registrosPontoMatricula.length - 1].data;
+            },
+            tipoListagemRegistros: function () {
+                if (this.funcionario.tipo === 'servidor') {
+                    return 'lista-registros-servidor';
+                }
+                if (this.funcionario.tipo === 'terceirizado') {
+                    return 'lista-registros-terceirizado';
+                }
             }
         }
     }
