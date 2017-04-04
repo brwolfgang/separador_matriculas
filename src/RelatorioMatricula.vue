@@ -8,15 +8,22 @@
             </header>
             <div class="w3-container">
                 <div class="w3-panel w3-pale-blue w3-center">
-                    <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}<br>Período: {{ dataPrimeiroRegistro }} à {{ dataUltimoRegistro }}</p>
+                    <p>Matrícula: {{ funcionario.matricula }} - Tipo: {{ funcionario.tipo }}<br>Período: {{ dataPrimeiroRegistro }} à {{ dataUltimoRegistro }}<br>Jornada: {{ jornada }}</p>
                 </div>
-                <table class="w3-table w3-striped w3-margin-bottom w3-bordered">
-                    <tr><th style="width: 10%; text-align: center">Data</th><th style="width: 20%; text-align: center" >Dia da Semana</th><th style="text-align: center">Registros</th></tr>
+                <table class="w3-table w3-striped w3-margin-bottom">
+                    <tr>
+                        <th style="width: 10%; text-align: center">Data</th>
+                        <th style="width: 15%; text-align: center">Dia da Semana</th>
+                        <th style="width: 18.75%; text-align: center">Entrada</th>
+                        <th style="width: 18.75%; text-align: center">Saída</th>
+                        <th style="width: 18.75%; text-align: center">Permanência</th>
+                        <th style="width: 18.75%; text-align: center">Saldo</th>
+                    </tr>
                     <tr v-for="registro in registrosPontoMatricula">
                         <td class="w3-center" style="vertical-align: middle">{{ registro.data }}</td>
                         <td class="w3-center" style="vertical-align: middle">{{ registro.diaSemana }}</td>
-                        <td>
-                            <component :is="tipoListagemRegistros" :horarios="registro.horarios"></component>
+                        <td class="w3-padding-0" colspan="4" >
+                            <component :is="tipoListagemRegistros" :horarios="registro.horarios" :jornada="jornada"></component>
                         </td>
                     </tr>
                 </table>
@@ -32,9 +39,7 @@
             registrosPonto: Array
         },
         data: function () {
-            return {
-
-            }
+            return {}
         },
         methods: {
             ocultarRelatorioFuncionario() {
@@ -42,13 +47,20 @@
             },
             determinarDiaSemana(numeroDiaSemana) {
                 switch (numeroDiaSemana) {
-                    case 0 : return 'Domingo';
-                    case 1 : return 'Segunda-feira';
-                    case 2 : return 'Terça-feira';
-                    case 3 : return 'Quarta-feira';
-                    case 4 : return 'Quinta-feira';
-                    case 5 : return 'Sexta-feira';
-                    case 6 : return 'Sábado';
+                    case 0 :
+                        return 'Domingo';
+                    case 1 :
+                        return 'Segunda-feira';
+                    case 2 :
+                        return 'Terça-feira';
+                    case 3 :
+                        return 'Quarta-feira';
+                    case 4 :
+                        return 'Quinta-feira';
+                    case 5 :
+                        return 'Sexta-feira';
+                    case 6 :
+                        return 'Sábado';
                 }
             },
             getDataFormatada(data){
@@ -101,7 +113,7 @@
                 }
                 return registrosMatricula;
             },
-            dataPrimeiroRegistro: function() {
+            dataPrimeiroRegistro: function () {
                 return this.registrosPontoMatricula[0].data;
             },
             dataUltimoRegistro: function () {
@@ -114,7 +126,15 @@
                 if (this.funcionario.tipo === 'terceirizado') {
                     return 'lista-registros-terceirizado';
                 }
+            },
+            jornada: function () {
+                if (this.funcionario.tipo === 'servidor') {
+                    return '6:00';
+                }
+                if (this.funcionario.tipo === 'terceirizado') {
+                    return '8:00';
+                }
             }
         }
-    }
+    };
 </script>
